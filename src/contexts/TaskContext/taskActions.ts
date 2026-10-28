@@ -6,6 +6,7 @@
 // payload <- os dados extras enviados junto com a ActivityIcon, se necessario para atualizar o estado
 
 import type { TaskModel } from '../../models/TaskModel';
+import type { TaskStateModel } from '../../models/TaskStateModel';
 
 export enum TaskActionTypes {
   START_TASK = 'START_TASK',
@@ -15,10 +16,15 @@ export enum TaskActionTypes {
   COMPLETE_TASK = 'COMPLETE_TASK',
 }
 
-export type TaskActionsWithPayload = {
-  type: TaskActionTypes.START_TASK;
-  payload: TaskModel;
-};
+export type TaskActionsWithPayload = 
+  |{
+    type: TaskActionTypes.START_TASK;
+    payload: TaskModel;
+   }
+  |{
+    type: TaskActionTypes.COUNT_DOWN;
+    payload: Pick<TaskStateModel, 'secondsRemaining'>;
+   };
 
 export type TaskActionsWithoutPayload =
   | {

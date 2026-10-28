@@ -11,26 +11,27 @@ type TaskContextProviderProps = {
 export function TaskContextProvider({ children }: TaskContextProviderProps) {
   const [state, dispatch] = useReducer(taskReducer, initialTaskState);
 
-  const worker = TimerWorkerManager.getInstance();
-
-  worker.onmessage((e) => {
-    const countDownSeconds = e.data;
-    console.log(countDownSeconds);
-
-    if (countDownSeconds <= 0) {
-      console.log('Worker COMPLETED');
-      worker.terminate();
-    }
-  });
-
   useEffect(() => {
+    const worker = TimerWorkerManager.getInstance();
+
+    // Configura o listener do worker dentro do efeito
+    worker.onmessage((e) => {
+      const countDownSeconds = e.data;
+      console.log(countDownSeconds);
+
+      if (countDownSeconds <= 0) {
+        console.log('Worker COMPLETED');
+        worker.terminate();
+      }
+    });
+
     if (!state.activeTask) {
       console.log('Worker terminado por falta de activeTask');
       worker.terminate();
+    } else {
+      worker.postMessage(state);
     }
-
-    worker.postMessage(state);
-  }, [worker, state]);
+  }, [state]);
 
   return (
     <TaskContext.Provider value={{ state, dispatch }}>
